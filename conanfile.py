@@ -46,7 +46,7 @@ class QtConan(ConanFile):
 
     generators = "pkg_config"
     name = "qt"
-    version = "5.13.1"
+    version = "4.8.7"
     description = "Qt is a cross-platform framework for graphical user interfaces."
     topics = ("conan", "qt", "ui")
     url = "https://github.com/bincrafters/conan-qt"
@@ -290,10 +290,10 @@ class QtConan(ConanFile):
             tools.get("%s.tar.xz" % url, sha256='adf00266dc38352a166a9739f1a24a1e36f1be9c04bf72e16e142a256436974e')
         else:  # python 2 cannot deal with .xz archives
             self.run("wget -qO- %s.tar.xz | tar -xJ " % url)
-        shutil.move("qt-everywhere-src-%s" % self.version, "qt5")
+        shutil.move("qt-everywhere-src-%s" % self.version, "qt4")
 
         for patch in ["3f9c9db.diff"]:
-            tools.patch("qt5/qtbase", patch)
+            tools.patch("qt4/qtbase", patch)
 
     def _xplatform(self):
         if self.settings.os == "Linux":
@@ -394,7 +394,7 @@ class QtConan(ConanFile):
             
         for module in QtConan._submodules:
             if module != 'qtbase' and not getattr(self.options, module) \
-                    and os.path.isdir(os.path.join(self.source_folder, 'qt5', QtConan._submodules[module]['path'])):
+                    and os.path.isdir(os.path.join(self.source_folder, 'qt4', QtConan._submodules[module]['path'])):
                 args.append("-skip " + module)
 
         args.append("--zlib=system")
@@ -568,7 +568,7 @@ class QtConan(ConanFile):
         with tools.vcvars(self.settings) if self.settings.compiler == "Visual Studio" else tools.no_op():
             with tools.environment_append({"MAKEFLAGS": "j%d" % tools.cpu_count(), "PKG_CONFIG_PATH": os.getcwd()}):
                 try:
-                    self.run("%s/qt5/configure %s" % (self.source_folder, " ".join(args)))
+                    self.run("%s/qt4/configure %s" % (self.source_folder, " ".join(args)))
                 finally:
                     self.output.info(open('config.log', errors='backslashreplace').read())
 
